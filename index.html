@@ -13,6 +13,13 @@
             <p>Your all-in-one practice companion</p>
         </header>
 
+        <div class="tabs">
+            <button class="tab-button active" data-tab="metronome">Metronome</button>
+            <button class="tab-button" data-tab="tuner">Tuner</button>
+            <button class="tab-button" data-tab="timer">Practice Timer</button>
+            <button class="tab-button" data-tab="notes">Note Generator</button>
+        </div>
+
         <div id="metronome" class="tab-content active">
             <div class="tempo-container">
                 <label for="tempo">Tempo:</label>
@@ -21,13 +28,6 @@
             </div>
             <button id="startMetronome">Start</button>
             <button id="stopMetronome" class="secondary">Stop</button>
-        </div>
-
-        <div id="tuner" class="tab-content">
-            <h2>Tuner</h2>
-            <p id="noteDisplay">Play a note...</p>
-            <p id="frequencyDisplay">Frequency: -- Hz</p>
-            <button id="startTuner">Start Tuning</button>
         </div>
 
         <div id="timer" class="tab-content">
