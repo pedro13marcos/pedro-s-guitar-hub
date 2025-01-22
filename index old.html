@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Pedro's Guitar Hub V0.1</title>
+        <script src="tuner.js"></script>
+        <!--<script src="notesRandom.js"></script>-->
+    </head>
+    <body>
+        <h1>Pedro's Guitar Hub V0.1</h1>
+
+        <!-- note generator-->
+        <button id="randomNotesButton">Generate Random Notes List</button>
+        <button id="clearButton">Clear Notes List</button>
+        <ul id="notesList"></ul> 
+        <script src="notesRandom.js"></script>
+        
+        <!-- stopwatch-->
+        <div id="timer">00:00:00</div> <button id="start">Start</button> <button id="stop">Stop</button> <button id="reset">Reset</button>
+        <script src="stopwatch.js"></script>
+    
+        <div><!--metronome-->
+            <label for="tempo">Tempo:</label> <input type="number" id="tempo" name="tempo" min="20" max="500" value="120"> 
+            <span id="tempoValue">120</span> BPM
+        </div>
+        <button id="startMetronome">Start</button> <button id="stopMetronome">Stop</button>
+        
+        <script src="metronome.js"></script>
+
+    </body>
+</html>
