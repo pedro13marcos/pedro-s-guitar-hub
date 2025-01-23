@@ -26,6 +26,12 @@ randomNotesButton.addEventListener("click", () => {
     randomNotes.forEach(note => {
         const listItem = document.createElement("li");
         listItem.textContent = note;
+
+        // Apply alternating colors
+    const isEven = notesList.children.length % 2 === 0;
+    listItem.style.backgroundColor = isEven ? "#3b82f6" : "#947310"; // Light blue or dark gray
+    listItem.style.color = "#ffffff";
+
         notesList.appendChild(listItem);
     });
 });

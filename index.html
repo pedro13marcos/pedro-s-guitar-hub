@@ -9,51 +9,64 @@
 <body>
     <div class="container">
         <header>
-            <h1>Pedro's Guitar Hub</h1>
-            <p>Your all-in-one practice companion</p>
+            <div class="tools">
+            <!-- Metronome Section -->
+            <div id="metronome">
+                <div class="tempo-container">
+                    <label for="tempo">Tempo:</label>
+                    <input type="number" id="tempo" name="tempo" min="20" max="500" value="120">
+                    <span id="tempoValue">120</span> BPM
+                </div>
+                <button id="startMetronome" class="topbutton">Start</button>
+                <button id="stopMetronome" class="topbutton">Stop</button>
+            </div>
+
+            <!--title-->
+            <div id="title">
+                <h1>Pedro's Guitar Hub</h1>
+                <p>Your all-in-one practice companion</p>
+            </div>
+
+            <!-- Timer Section -->
+            <div id="timer">
+                <div id="timerDisplay">00:00:00</div>
+                <div class="tool-container">
+                    <button id="start" class="topbutton">Start</button>
+                    <button id="stop" class="topbutton">Stop</button>
+                    <button id="reset" class="topbutton">Reset</button>
+                </div>
+            </div>
+        </div>
+            
         </header>
 
+        
+
         <div class="tabs">
-            <button class="tab-button active" data-tab="metronome">Metronome</button>
+            <button class="tab-button active" data-tab="notes">Note Generator</button>
             <button class="tab-button" data-tab="tuner">Tuner</button>
-            <button class="tab-button" data-tab="timer">Practice Timer</button>
-            <button class="tab-button" data-tab="notes">Note Generator</button>
         </div>
 
-        <div id="metronome" class="tab-content active">
-            <div class="tempo-container">
-                <label for="tempo">Tempo:</label>
-                <input type="number" id="tempo" name="tempo" min="20" max="500" value="120">
-                <span id="tempoValue">120</span> BPM
-            </div>
-            <button id="startMetronome">Start</button>
-            <button id="stopMetronome" class="secondary">Stop</button>
-        </div>
-
-        <div id="tuner" class="tab-content">
-            <h2>Tuner</h2>
-            <p id="noteDisplay">Play a note...</p>
-            <p id="frequencyDisplay">Frequency: -- Hz</p>
-            <button id="startTuner">Start Tuning</button>
-        </div>
-
-        <div id="timer" class="tab-content">
-            <div id="timer-display">00:00:00</div>
-            <div class="tool-container">
-                <button id="start">Start</button>
-                <button id="stop" class="secondary">Stop</button>
-                <button id="reset" class="secondary">Reset</button>
-            </div>
-        </div>
-
-        <div id="notes" class="tab-content">
+        <div id="notes" class="tab-content active">
             <div class="tool-container">
                 <button id="randomNotesButton">Generate Random Notes</button>
                 <button id="clearButton" class="secondary">Clear Notes</button>
             </div>
             <ul id="notesList"></ul>
         </div>
-    </div>
+    
+
+        <div id="tuner" class="tab-content">
+            <h2>Tuner</h2>
+            <p id="noteDisplay">Coming soon</p>
+            <!--<p id="frequencyDisplay">Frequency: -- Hz</p>
+            <button id="startTuner">Start Tuning</button>-->
+        </div>
+    
+    <footer>
+        <p>Press the <strong>Space Bar</strong> to start and pause the stopwatch.</p>
+    </footer>
+</div>
 
     <script>
         // Tab functionality
@@ -80,4 +93,6 @@
     <script src="stopwatch.js"></script>
     <script src="notesRandom.js"></script>
 </body>
+
+
 </html>
