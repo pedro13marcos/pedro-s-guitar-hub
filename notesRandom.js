@@ -1,5 +1,5 @@
 
-const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
 const notesList = document.getElementById("notesList");
 const randomNotesButton = document.getElementById("randomNotesButton");
 
