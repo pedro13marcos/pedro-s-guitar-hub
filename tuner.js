@@ -1,117 +1,139 @@
-const startTunerButton = document.getElementById('startTuner');
-const noteDisplay = document.getElementById('noteDisplay');
-const frequencyDisplay = document.getElementById('frequencyDisplay');
+// tuner.js
+document.addEventListener('DOMContentLoaded', (event) => {
+    //All tuner initialization code here
 
-let audioContext;
-let analyser;
-let microphone;
-let scriptProcessor;
+    
+let tunerInitiated = false;
+let audioContext; // Define audioContext in a higher scope
 
-const noteFrequencies = [
-    { note: 'E2', frequency: 82.41 },
-    { note: 'A2', frequency: 110.00 },
-    { note: 'D3', frequency: 146.83 },
-    { note: 'G3', frequency: 196.00 },
-    { note: 'B3', frequency: 246.94 },
-    { note: 'E4', frequency: 329.63 },
-];
+const toneDisplay = document.getElementById('toneDisplay');
+//const frequencyDisplay = document.getElementById('frequencyDisplay'); // Optional frequency display
 
-function startTuner() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Your browser does not support microphone access.');
-        return;
-    }
+const tones = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+const A4 = 440; // Tuning frequency of A4
+const tonesFrequencies = tones.map((tone, index) => {
+    // Calculate the frequency relative to A4
+    const halfStepsFromA = index - 9; // A is at index 9
+    return A4 * Math.pow(2, halfStepsFromA / 12);
+});
 
+
+
+
+function updateTuner() {
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(stream => {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
-            analyser.fftSize = 2048;
+      .then(function (stream) {
+        const audioContext = new AudioContext();
+        const analyser = audioContext.createAnalyser();
+        const source = audioContext.createMediaStreamSource(stream);
+        source.connect(analyser);
 
-            microphone = audioContext.createMediaStreamSource(stream);
-            scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1);
+        analyser.fftSize = 2048; // Larger FFT size for more accurate frequency detection
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
 
-            microphone.connect(analyser);
-            analyser.connect(scriptProcessor);
-            scriptProcessor.connect(audioContext.destination);
 
-            scriptProcessor.onaudioprocess = processAudio;
-        })
-        .catch(err => {
-            console.error('Microphone access denied:', err);
-            alert('Could not access the microphone. Please allow microphone access.');
-        });
-}
+        function getFrequency() {
+            analyser.getByteFrequencyData(dataArray);
 
-function processAudio() {
-    const buffer = new Float32Array(analyser.fftSize);
-    analyser.getFloatTimeDomainData(buffer);
+            // Find the peak frequency (index with highest value) and then get the real frequency
+            let maxIndex = 0;
+            for (let i = 1; i < bufferLength; i++) {
+                if (dataArray[i] > dataArray[maxIndex]) {
+                    maxIndex = i;
+                }
+            }
 
-    const frequency = detectFrequency(buffer, audioContext.sampleRate);
-    if (frequency) {
-        const closestNote = findClosestNote(frequency);
-        noteDisplay.textContent = `Note: ${closestNote.note}`;
-        frequencyDisplay.textContent = `Frequency: ${frequency.toFixed(2)} Hz`;
-    } else {
-        noteDisplay.textContent = 'No sound detected';
-        frequencyDisplay.textContent = 'Frequency: -- Hz';
-    }
-}
 
-function detectFrequency(buffer, sampleRate) {
-    const size = buffer.length;
-    const autocorrelation = new Float32Array(size);
-    let rms = 0;
+            const frequency = maxIndex * audioContext.sampleRate / analyser.fftSize;
+            return frequency;
 
-    // Compute RMS to discard silent input
-    for (let i = 0; i < size; i++) {
-        const value = buffer[i];
-        rms += value * value;
-    }
-    rms = Math.sqrt(rms / size);
-    if (rms < 0.01) return null; // Silent audio
-
-    // Autocorrelation algorithm
-    for (let lag = 0; lag < size; lag++) {
-        let sum = 0;
-        for (let i = 0; i < size - lag; i++) {
-            sum += buffer[i] * buffer[i + lag];
         }
-        autocorrelation[lag] = sum / size;
-    }
 
-    // Find the peak in autocorrelation
-    let peakIndex = -1;
-    let maxCorrelation = 0;
-    for (let i = 1; i < size; i++) {
-        if (autocorrelation[i] > maxCorrelation) {
-            maxCorrelation = autocorrelation[i];
-            peakIndex = i;
+        function findClosestNote(frequency) {
+            let closestNote = "";
+            let minDifference = Infinity; // initialize with a large value
+
+            for (let i = 0; i < tonesFrequencies.length; i++) {
+                const difference = Math.abs(frequency - tonesFrequencies[i]);
+                if (difference < minDifference) {
+                    minDifference = difference;
+                    closestNote = tones[i];
+                }
+            }
+
+            return closestNote;
         }
-    }
 
-    if (peakIndex === -1 || maxCorrelation < 0.1) return null;
+        setInterval(() => {
+          const frequency = getFrequency();
+          //frequencyDisplay.textContent = `Frequency: ${frequency.toFixed(2)} Hz`; // Optional
+          const closestNote = findClosestNote(frequency);
+          toneDisplay.textContent = closestNote;
 
-    // Convert lag to frequency
-    return sampleRate / peakIndex;
+          // Visual feedback (change text color based on tuning accuracy)
+          const difference = Math.abs(frequency - tonesFrequencies[tones.indexOf(closestNote)]);
+          if (difference < 2) {  // Tune threshold
+              toneDisplay.style.color = 'green';
+          } else if (difference < 5) { // Close to Tune
+                toneDisplay.style.color = 'orange';
+          }
+          else{
+              toneDisplay.style.color = "white"
+          }
+
+        }, 100); // Update every 100ms
+
+
+        // Stop the tuner when leaving the tab or closing the page
+        const tunerTab = document.getElementById('tuner');
+
+        function stopTuner() {
+
+            audioContext.close();
+
+        }
+
+
+        //Visibility change handling
+        let hidden, visibilityChange;
+        if (typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
+          hidden = "hidden";
+          visibilityChange = "visibilitychange";
+        } else if (typeof document.msHidden !== "undefined") {
+          hidden = "msHidden";
+          visibilityChange = "msvisibilitychange";
+        } else if (typeof document.webkitHidden !== "undefined") {
+          hidden = "webkitHidden";
+          visibilityChange = "webkitvisibilitychange";
+        }
+
+
+
+
+        document.addEventListener(visibilityChange, stopTuner);
+        tunerTab.addEventListener('blur', stopTuner);
+        window.addEventListener('beforeunload', stopTuner);
+
+
+
+      })
+      .catch(function (err) {
+        console.error('Error accessing microphone:', err);
+        toneDisplay.textContent = 'Error accessing microphone';
+      });
+  } else {
+    console.error('getUserMedia not supported on this browser.');
+    toneDisplay.textContent = 'getUserMedia not supported';
+  }
 }
 
-function findClosestNote(frequency) {
-    let closestNote = noteFrequencies[0];
-    let smallestDifference = Math.abs(frequency - closestNote.frequency);
-
-    for (const note of noteFrequencies) {
-        const difference = Math.abs(frequency - note.frequency);
-        if (difference < smallestDifference) {
-            closestNote = note;
-            smallestDifference = difference;
-        }
-    }
-
-    return closestNote;
-}
 
 
-startTunerButton.addEventListener('click', startTuner);
 
-console.log(buffer);
+// Start the tuner when the tuner tab is clicked
+const tunerTabButton = document.querySelector('.tab-button[data-tab="tuner"]');
+tunerTabButton.addEventListener('click', updateTuner);
+
+});
