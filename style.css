@@ -108,16 +108,206 @@
 
         #tuner {
             text-align: center;
+            padding: 10px 0;
         }
-        
-        #noteDisplay {
-            font-size: 2rem;
-            color: #eab308;
+
+        /* Tuner Hardware Chassis */
+        .tuner-chassis {
+            background: linear-gradient(145deg, #252830, #131518);
+            border-radius: 28px;
+            padding: 24px 20px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.15), 0 15px 35px rgba(0,0,0,0.7);
+            max-width: 440px;
+            margin: 0 auto;
+            border: 2px solid #333842;
+            position: relative;
         }
-        
-        #frequencyDisplay {
-            font-size: 1.5rem;
+
+        .tuner-screw {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #525866;
+            box-shadow: inset 0 1px 1px #888;
+        }
+        .screw-tl { top: 12px; left: 16px; }
+        .screw-tr { top: 12px; right: 16px; }
+
+        .tuner-brand {
+            text-align: center;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        /* LCD Glass Screen */
+        .tuner-lcd {
+            background: radial-gradient(circle at center, #0a101d 0%, #03060a 100%);
+            border-radius: 18px;
+            padding: 20px 16px;
+            border: 2px solid #0f172a;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.95);
+        }
+
+        .tuner-scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 0 20px;
+            margin-bottom: 8px;
+            font-family: monospace;
+        }
+        .flat-label { color: #eab308; }
+        .center-label { color: #38bdf8; }
+        .sharp-label { color: #ef4444; }
+
+        /* Dynamic LED Meter */
+        .led-meter {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 5px;
+            height: 48px;
+            margin-bottom: 14px;
+        }
+
+        .led-bar {
+            width: 8px;
+            border-radius: 3px;
+            transition: background-color 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        /* Inactive states */
+        .led-bar.flat { background-color: #27200c; }
+        .led-bar.center { width: 10px; background-color: #0b2535; }
+        .led-bar.sharp { background-color: #2b1111; }
+
+        /* Active glowing states */
+        .led-bar.flat.active {
+            background-color: #eab308;
+            box-shadow: 0 0 10px #eab308, 0 0 20px rgba(234, 179, 8, 0.5);
+        }
+        .led-bar.center.active {
+            background-color: #38bdf8;
+            box-shadow: 0 0 12px #38bdf8, 0 0 24px rgba(56, 189, 248, 0.7);
+        }
+        .led-bar.center.in-tune {
+            background-color: #22c55e;
+            box-shadow: 0 0 14px #22c55e, 0 0 28px rgba(34, 197, 94, 0.8);
+        }
+        .led-bar.sharp.active {
+            background-color: #ef4444;
+            box-shadow: 0 0 10px #ef4444, 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        /* Note Readout */
+        .tuner-note-container {
+            text-align: center;
+            margin: 10px 0;
+            min-height: 85px;
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+        }
+
+        .digital-note {
+            font-size: 5rem;
+            font-weight: 900;
+            font-family: 'Courier New', Courier, monospace;
+            color: #38bdf8;
+            text-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+            letter-spacing: -3px;
+            transition: color 0.15s, text-shadow 0.15s;
+        }
+
+        .digital-accidental {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #38bdf8;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+            margin-left: 2px;
+        }
+
+        .digital-octave {
+            font-size: 1.4rem;
+            color: #64748b;
+            margin-left: 6px;
+            font-family: monospace;
+        }
+
+        /* Status Bar */
+        .tuner-status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #1e293b;
+            padding-top: 12px;
             margin-top: 10px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .lcd-text {
+            color: #64748b;
+        }
+
+        .lcd-badge {
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 4px;
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+        }
+
+        .lcd-badge.in-tune {
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.15);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+
+        .lcd-badge.flat {
+            color: #eab308;
+            background: rgba(234, 179, 8, 0.15);
+        }
+
+        .lcd-badge.sharp {
+            color: #ef4444;
+            background: rgba(239, 68, 68, 0.15);
+        }
+
+        /* Power Button */
+        .tuner-controls {
+            margin-top: 18px;
+            text-align: center;
+        }
+
+        .tuner-power-btn {
+            background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+            border: 1px solid #60a5fa;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 22px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+        }
+
+        .tuner-power-btn:hover {
+            background: linear-gradient(180deg, #2563eb, #1e40af);
+            transform: translateY(-1px);
+        }
+
+        .tuner-power-btn.active-running {
+            background: linear-gradient(180deg, #ef4444, #b91c1c);
+            border-color: #f87171;
         }
 
         button {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro's Guitar Hub v0.2</title>
+    <title>Pedro's Guitar Hub v0.3</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -57,18 +57,68 @@
     
 
         <div id="tuner" class="tab-content">
-            <h2>Tuner</h2>
-            <div class="tool-container">
-                <button id="toggleTuner">Start Tuner</button>
+            <!-- Hardware Enclosure -->
+            <div class="tuner-chassis">
+                <div class="tuner-screw screw-tl"></div>
+                <div class="tuner-screw screw-tr"></div>
+                
+                <div class="tuner-brand">Pedro TU-01 • Digital Clip-On</div>
+
+                <!-- LCD Glass Screen -->
+                <div class="tuner-lcd">
+                    <!-- Scale Header -->
+                    <div class="tuner-scale-labels">
+                        <span class="scale-label flat-label">-50</span>
+                        <span class="scale-label center-label">▲ 0</span>
+                        <span class="scale-label sharp-label">+50</span>
+                    </div>
+
+                    <!-- Dynamic LED Arc / Segment Meter -->
+                    <div id="ledMeter" class="led-meter">
+                        <!-- Left Flat LEDs (1-6) -->
+                        <div class="led-bar flat" data-index="0" style="height: 18px;"></div>
+                        <div class="led-bar flat" data-index="1" style="height: 22px;"></div>
+                        <div class="led-bar flat" data-index="2" style="height: 26px;"></div>
+                        <div class="led-bar flat" data-index="3" style="height: 30px;"></div>
+                        <div class="led-bar flat" data-index="4" style="height: 34px;"></div>
+                        <div class="led-bar flat" data-index="5" style="height: 38px;"></div>
+                        <!-- Center In-Tune LEDs (7-8) -->
+                        <div class="led-bar center" data-index="6" style="height: 44px;"></div>
+                        <div class="led-bar center" data-index="7" style="height: 44px;"></div>
+                        <!-- Right Sharp LEDs (9-14) -->
+                        <div class="led-bar sharp" data-index="8" style="height: 38px;"></div>
+                        <div class="led-bar sharp" data-index="9" style="height: 34px;"></div>
+                        <div class="led-bar sharp" data-index="10" style="height: 30px;"></div>
+                        <div class="led-bar sharp" data-index="11" style="height: 26px;"></div>
+                        <div class="led-bar sharp" data-index="12" style="height: 22px;"></div>
+                        <div class="led-bar sharp" data-index="13" style="height: 18px;"></div>
+                    </div>
+
+                    <!-- Note Readout -->
+                    <div class="tuner-note-container">
+                        <span id="noteName" class="digital-note">--</span>
+                        <span id="accidental" class="digital-accidental"></span>
+                        <span id="octave" class="digital-octave"></span>
+                    </div>
+
+                    <!-- Bottom Status Bar -->
+                    <div class="tuner-status-bar">
+                        <span id="frequencyDisplay" class="lcd-text">-- Hz</span>
+                        <span id="tuningIndicator" class="lcd-badge">STANDBY</span>
+                        <span class="lcd-text">CHROMATIC</span>
+                    </div>
+                </div>
+
+                <!-- Hardware Control Button -->
+                <div class="tuner-controls">
+                    <button id="toggleTuner" class="tuner-power-btn">Power / Listen</button>
+                </div>
             </div>
-            <p id="noteDisplay" style="font-size: 3rem; font-weight: bold; margin: 15px 0;">--</p>
-            <p id="frequencyDisplay" style="font-size: 1.2rem; color: #94a3b8;">Frequency: -- Hz</p>
-            <div id="tuningIndicator" style="font-size: 1.1rem; margin-top: 8px;"></div>
         </div>
     
     <footer>
         <p>Press the <strong>Space Bar</strong> to start and pause the stopwatch.</p>
-        <p class="version-watermark">v0.2</p>
+        <p class="version-watermark">v0.3</p>
     </footer>
 </div>
 
