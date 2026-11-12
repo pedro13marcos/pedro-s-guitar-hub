@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro's Guitar Hub v0.10</title>
+    <title>Pedro's Guitar Hub v0.11</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,66 +18,142 @@
                 </div>
             </div>
             <div>
-                <span class="version-badge">v0.10</span>
+                <span class="version-badge">v0.11</span>
             </div>
         </header>
 
-        <!-- Top Tools Station: Metronome & Session Stopwatch -->
-        <div class="top-grid">
-            <!-- Metronome Card -->
-            <div class="panel-card" id="metronome-card">
-                <div class="card-header">
-                    <span>METRONOME</span>
+        <!-- Top Tools Station: Metronome & Session Stopwatch (Compact Bar) -->
+        <div class="top-station-compact">
+            <!-- Compact Metronome -->
+            <div class="compact-tool-card" id="metronome-card">
+                <div class="compact-header">
+                    <span class="compact-title">METRONOME</span>
                     <div id="beatIndicator" class="beat-dot"></div>
                 </div>
-                <div class="tempo-readout">
-                    <span id="tempoValue" class="bpm-num">120</span>
-                    <span class="bpm-unit">BPM</span>
-                </div>
-                <div class="slider-wrapper">
-                    <input type="range" id="tempo" min="40" max="260" value="120" class="tempo-slider">
-                </div>
-                <div class="btn-group">
-                    <button id="startMetronome" class="btn-primary">▶ Start</button>
-                    <button id="stopMetronome" class="btn-secondary">Stop</button>
+                <div class="compact-body">
+                    <div class="compact-readout">
+                        <span id="tempoValue" class="compact-bpm">120</span>
+                        <span class="bpm-unit">BPM</span>
+                    </div>
+                    <input type="range" id="tempo" min="40" max="260" value="120" class="tempo-slider compact-slider">
+                    <div class="btn-group compact-btn-group">
+                        <button id="startMetronome" class="btn-primary compact-btn">▶ Start</button>
+                        <button id="stopMetronome" class="btn-secondary compact-btn">Stop</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Session Stopwatch Card -->
-            <div class="panel-card" id="timer-card">
-                <div class="card-header">
-                    <span>SESSION TIMER</span>
+            <!-- Compact Stopwatch -->
+            <div class="compact-tool-card" id="timer-card">
+                <div class="compact-header">
+                    <span class="compact-title">SESSION TIMER</span>
                     <span class="shortcut-tag">Spacebar</span>
                 </div>
-                <div class="stopwatch-container">
-                    <div id="timerDisplay" class="stopwatch-readout">00:00:00.00</div>
-                </div>
-                <div class="btn-group">
-                    <button id="start" class="btn-primary start-timer-btn">Start</button>
-                    <button id="stop" class="btn-secondary">Stop</button>
-                    <button id="reset" class="btn-secondary">Reset</button>
+                <div class="compact-body">
+                    <div id="timerDisplay" class="compact-stopwatch">00:00:00.00</div>
+                    <div class="btn-group compact-btn-group">
+                        <button id="start" class="btn-primary start-timer-btn compact-btn">Start</button>
+                        <button id="stop" class="btn-secondary compact-btn">Stop</button>
+                        <button id="reset" class="btn-secondary compact-btn">Reset</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Segmented Tab Navigation -->
         <div class="tabs">
-            <button class="tab-button active" data-tab="tuner">
-                <span>🎯</span> Chromatic Tuner
+            <button class="tab-button active" data-tab="gpreader">
+                <span>🎸</span> Guitar Pro (.gp)
             </button>
             <button class="tab-button" data-tab="tabmaker">
                 <span>🎼</span> Tab Maker
             </button>
             <button class="tab-button" data-tab="tabreader">
-                <span>📖</span> Tab Reader
+                <span>📖</span> ASCII Reader
+            </button>
+            <button class="tab-button" data-tab="tuner">
+                <span>🎯</span> Tuner
             </button>
             <button class="tab-button" data-tab="notes">
                 <span>🎲</span> Note Generator
             </button>
         </div>
 
+        <!-- Guitar Pro Reader Tab Content -->
+        <div id="gpreader" class="tab-content active">
+            <div class="gpreader-workspace">
+                <div class="gpreader-header">
+                    <div>
+                        <h2>Guitar Pro (.gp3, .gp4, .gp5, .gpx, .gp) Reader</h2>
+                        <p class="gpreader-subtitle">Studio sheet & tablature viewer with interactive polyphonic playback & speed slow-down</p>
+                    </div>
+                    <div class="gpreader-actions">
+                        <label for="gpFileInput" class="btn-primary upload-label">📁 Open .gp File</label>
+                        <input type="file" id="gpFileInput" accept=".gp,.gp3,.gp4,.gp5,.gpx" style="display: none;">
+                        <button id="loadSampleGpBtn" class="btn-secondary">⚡ Load Canon in D Demo</button>
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Dropzone Area -->
+                <div id="gpDropZone" class="gp-dropzone">
+                    <span class="dropzone-icon">🎸</span>
+                    <p class="dropzone-text"><strong>Drag & Drop your Guitar Pro file here</strong>, or click "Open .gp File" above</p>
+                    <span class="dropzone-sub">Supports Guitar Pro 3, 4, 5, 6, 7 and modern .gp files</span>
+                </div>
+
+                <!-- Meta & Playback Control Bar -->
+                <div id="gpMetaBar" class="gp-meta-bar" style="display: none;">
+                    <div class="song-info">
+                        <span id="gpSongTitle" class="song-title">Song Title</span>
+                        <span id="gpSongArtist" class="song-artist">Artist</span>
+                    </div>
+
+                    <div class="gp-player-controls">
+                        <button id="gpPlayBtn" class="btn-primary gp-play-btn">▶ Play</button>
+                        <button id="gpStopBtn" class="btn-secondary">⏹ Stop</button>
+
+                        <!-- Track Selector -->
+                        <div class="control-item">
+                            <label for="gpTrackSelect">Track:</label>
+                            <select id="gpTrackSelect" class="gp-select"></select>
+                        </div>
+
+                        <!-- Speed Slow-down Selector -->
+                        <div class="control-item">
+                            <label for="gpSpeedSelect">Speed:</label>
+                            <select id="gpSpeedSelect" class="gp-select">
+                                <option value="0.25">25% (Super Slow)</option>
+                                <option value="0.5">50% (Half Speed)</option>
+                                <option value="0.75">75% (Practice)</option>
+                                <option value="1.0" selected>100% (Normal)</option>
+                                <option value="1.25">125% (Fast)</option>
+                            </select>
+                        </div>
+
+                        <!-- Zoom Selector -->
+                        <div class="control-item">
+                            <label for="gpZoomSelect">Zoom:</label>
+                            <select id="gpZoomSelect" class="gp-select">
+                                <option value="0.75">75%</option>
+                                <option value="1.0" selected>100%</option>
+                                <option value="1.25">125%</option>
+                                <option value="1.5">150%</option>
+                            </select>
+                        </div>
+
+                        <span id="gpStatusBadge" class="gp-status-badge">READY</span>
+                    </div>
+                </div>
+
+                <!-- alphaTab Rendering Canvas Container -->
+                <div class="alphatab-wrapper">
+                    <div id="alphaTabContainer"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Tuner Tab Content -->
-        <div id="tuner" class="tab-content active">
+        <div id="tuner" class="tab-content">
             <div class="tuner-workspace">
                 <!-- Hardware Clip-On Chassis -->
                 <div class="tuner-chassis">
@@ -272,7 +348,7 @@ E|-----------------------------------|"></textarea>
         <!-- App Footer -->
         <footer class="app-footer">
             <p>Press the <strong>Space Bar</strong> anywhere to start/pause the stopwatch.</p>
-            <p class="version-watermark">v0.10</p>
+            <p class="version-watermark">v0.11</p>
         </footer>
     </div>
 
@@ -293,11 +369,13 @@ E|-----------------------------------|"></textarea>
         });
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/alphaTab.min.js"></script>
     <script src="metronome.js"></script>
     <script src="tuner.js"></script>
     <script src="stopwatch.js"></script>
     <script src="tabMaker.js"></script>
     <script src="tabReader.js"></script>
+    <script src="gpReader.js"></script>
     <script src="notesRandom.js"></script>
 </body>
 </html>
