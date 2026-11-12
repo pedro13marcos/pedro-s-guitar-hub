@@ -18,17 +18,18 @@ if (randomNotesButton) {
         notesList.innerHTML = "";
 
         const randomNotes = getRandomNotes();
-        randomNotes.forEach(note => {
+        randomNotes.forEach((note, index) => {
             const listItem = document.createElement("li");
             listItem.textContent = note;
 
-            if (note.includes("#")) {
-                listItem.style.background = "linear-gradient(135deg, #1e293b, #334155)";
-                listItem.style.borderColor = "#60a5fa";
-                listItem.style.color = "#38bdf8";
+            // Alternating checkerboard/chess pattern with high visual distinction
+            const isEven = index % 2 === 0;
+            if (isEven) {
+                // Electric Cobalt Blue tile
+                listItem.className = "note-card note-card-blue";
             } else {
-                listItem.style.background = "#1e293b";
-                listItem.style.color = "#f8fafc";
+                // Warm Amber / Bronze Gold tile
+                listItem.className = "note-card note-card-gold";
             }
 
             notesList.appendChild(listItem);

@@ -1,4 +1,4 @@
-# Pedro's Guitar Hub (v0.6)
+# Pedro's Guitar Hub (v0.7)
 
 Your all-in-one practice suite for guitarists and musicians.
 

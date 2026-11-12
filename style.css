@@ -518,20 +518,34 @@ body {
 }
 
 .notes-grid li {
-    background: #1e293b;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 16px 8px;
+    padding: 18px 8px;
     border-radius: 12px;
-    font-size: 1.3rem;
-    font-weight: 800;
+    font-size: 1.4rem;
+    font-weight: 900;
     font-family: monospace;
-    color: #f8fafc;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: transform 0.15s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    user-select: none;
 }
 
 .notes-grid li:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+}
+
+/* Chess / Alternating Pattern Tiles */
+.notes-grid li.note-card-blue {
+    background: linear-gradient(145deg, #1d4ed8, #1e3a8a);
+    border: 1px solid #60a5fa;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.6);
+}
+
+.notes-grid li.note-card-gold {
+    background: linear-gradient(145deg, #b45309, #78350f);
+    border: 1px solid #f59e0b;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
 }
 
 /* Footer */
