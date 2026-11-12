@@ -712,6 +712,130 @@ body {
     border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
+.gp-bpm-input {
+    width: 65px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f8fafc;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-family: monospace;
+    text-align: center;
+}
+
+.gp-restore-btn {
+    padding: 6px 10px !important;
+    font-size: 0.78rem !important;
+    cursor: pointer;
+}
+
+/* Play Along Coach Bar */
+.playalong-coach-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    background: linear-gradient(90deg, #131b2e, #1a253d);
+    border: 1px solid #3b82f6;
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+}
+
+.coach-controls-left, .coach-feedback-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.coach-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.coach-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #22c55e;
+    cursor: pointer;
+}
+
+.coach-label-text {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+.coach-feedback-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+.playalong-status-badge {
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+}
+
+.playalong-status-badge.standby {
+    background: #1e293b;
+    color: #64748b;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.playalong-status-badge.listening {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.playalong-status-badge.hit {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid #22c55e;
+    box-shadow: 0 0 14px rgba(34, 197, 94, 0.5);
+}
+
+.playalong-status-badge.wait {
+    background: rgba(234, 179, 8, 0.2);
+    color: #eab308;
+    border: 1px solid #eab308;
+    box-shadow: 0 0 12px rgba(234, 179, 8, 0.4);
+    animation: pulseWait 1.2s infinite;
+}
+
+.playalong-status-badge.miss {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+@keyframes pulseWait {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.75; transform: scale(0.98); }
+}
+
+/* Missed note red glow indicator on tab */
+.missed-red-glow {
+    background: #ef4444 !important;
+    box-shadow: 0 0 15px #ef4444, 0 0 25px rgba(239, 68, 68, 0.8) !important;
+}
+
 /* Visual Track Follow-Up HUD Bar */
 .gp-followup-bar {
     display: flex;

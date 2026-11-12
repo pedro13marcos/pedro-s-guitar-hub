@@ -1,4 +1,4 @@
-// gpReader.js - Guitar Pro (.gp3, .gp4, .gp5, .gpx, .gp) Reader and Audio Player using alphaTab
+// gpReader.js - Guitar Pro (.gp3, .gp4, .gp5, .gpx, .gp) Reader, Play Along Coach & Audio Player
 document.addEventListener('DOMContentLoaded', () => {
     const gpFileInput = document.getElementById('gpFileInput');
     const gpDropZone = document.getElementById('gpDropZone');
@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const gpStopBtn = document.getElementById('gpStopBtn');
     const gpTrackSelect = document.getElementById('gpTrackSelect');
     const gpSpeedSelect = document.getElementById('gpSpeedSelect');
+    const gpBpmInput = document.getElementById('gpBpmInput');
+    const gpRestoreSpeedBtn = document.getElementById('gpRestoreSpeedBtn');
     const gpZoomSelect = document.getElementById('gpZoomSelect');
     const gpSongTitle = document.getElementById('gpSongTitle');
     const gpSongArtist = document.getElementById('gpSongArtist');
@@ -13,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gpMetaBar = document.getElementById('gpMetaBar');
     const loadSampleGpBtn = document.getElementById('loadSampleGpBtn');
 
-    // Visual Follow-up HUD Elements
+    // Visual Follow-Up HUD Elements
     const gpFollowUpBar = document.getElementById('gpFollowUpBar');
     const curTrackBadge = document.getElementById('curTrackBadge');
     const curBarBadge = document.getElementById('curBarBadge');
@@ -21,15 +23,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const curTempoBadge = document.getElementById('curTempoBadge');
     const activeNotePreview = document.getElementById('activeNotePreview');
 
+    // Play Along Controls
+    const playAlongToggle = document.getElementById('playAlongToggle');
+    const playAlongModeSelect = document.getElementById('playAlongModeSelect');
+    const playAlongFeedback = document.getElementById('playAlongFeedback');
+
     const alphaTabContainer = document.getElementById('alphaTabContainer');
 
     let api = null;
     let isApiPlaying = false;
+    let originalBpm = 120;
+    let playAlongEngine = null;
+    let isPlayAlongActive = false;
+    let playAlongListeningLoop = null;
+
+    // Standard string base MIDI numbers: e4=64, B3=59, G3=55, D3=50, A2=45, E2=40
+    const stringBaseMidi = [64, 59, 55, 50, 45, 40];
 
     // Canon in D sample in Guitar Pro format
     const SAMPLE_GP_URL = 'https://www.alphatab.net/files/canon.gp';
 
-    // Initialize alphaTab instance with dark studio theme and SVG engine
     function initAlphaTab() {
         if (!alphaTabContainer || typeof alphaTab === 'undefined') {
             console.warn('alphaTab library not loaded');
@@ -38,19 +51,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         api = new alphaTab.AlphaTabApi(alphaTabContainer, {
             core: {
-                engine: 'svg', // Crisp vector SVG rendering
+                engine: 'svg',
                 logLevel: 'warning'
             },
             display: {
                 layoutMode: 'page',
-                staveProfile: 'default', // Auto-detects notation & tablature properly for both guitar & drums
+                staveProfile: 'default',
                 resources: {
-                    // Dark theme matching Pedro's Guitar Hub
-                    staffLineColor: 'rgba(255, 255, 255, 0.35)', // Tab, drum and staff lines
+                    staffLineColor: 'rgba(255, 255, 255, 0.35)',
                     barSeparatorColor: 'rgba(255, 255, 255, 0.7)',
-                    mainGlyphColor: '#f8fafc',                    // Crisp white notes, stems, drum heads
+                    mainGlyphColor: '#f8fafc',
                     secondaryGlyphColor: '#94a3b8',
-                    scoreInfoColor: '#38bdf8',                    // Cyan title/artist
+                    scoreInfoColor: '#38bdf8',
                     barNumberColor: '#64748b',
                     fretNumberColor: '#38bdf8'
                 }
@@ -58,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             player: {
                 enablePlayer: true,
                 enableCursor: true,
-                scrollMode: 1, // Continuous scroll into view
+                scrollMode: 1,
                 scrollElement: '.alphatab-wrapper',
                 soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2'
             }
@@ -88,10 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if (gpStatusBadge) gpStatusBadge.textContent = 'READY';
                 if (activeNotePreview) activeNotePreview.textContent = '--';
+                if (playAlongFeedback) {
+                    playAlongFeedback.textContent = 'STANDBY';
+                    playAlongFeedback.className = 'playalong-status-badge standby';
+                }
             }
         });
 
-        // Live Playback Tracker - Follow active bar, beat, tempo and notes
+        // Live Playback Tracker & Play Along Beat Verifier
         api.playedBeatChanged.on((beat) => {
             if (!beat) return;
 
@@ -107,18 +123,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Tempo
             if (curTempoBadge && beat.voice && beat.voice.bar && beat.voice.bar.tempoAutomation) {
-                curTempoBadge.textContent = `${Math.round(beat.voice.bar.tempoAutomation.value)} BPM`;
+                const bpm = Math.round(beat.voice.bar.tempoAutomation.value);
+                curTempoBadge.textContent = `${bpm} BPM`;
             }
 
-            // Note / Fret or Percussion sound readout
-            if (activeNotePreview && beat.notes && beat.notes.length > 0) {
+            // Extract target MIDI notes from current beat
+            const targetMidiNotes = [];
+            if (beat.notes && beat.notes.length > 0) {
                 const noteDescriptions = beat.notes.map(n => {
                     if (n.isPercussion) {
                         return n.percussionElement ? n.percussionElement.name : 'Drum Hit';
                     }
+                    const baseMidi = stringBaseMidi[n.string - 1] || 40;
+                    const noteMidi = baseMidi + n.fret;
+                    targetMidiNotes.push(noteMidi);
                     return `${n.fret} (Str ${n.string})`;
                 });
-                activeNotePreview.textContent = noteDescriptions.join(', ');
+                if (activeNotePreview) activeNotePreview.textContent = noteDescriptions.join(', ');
+            } else {
+                if (activeNotePreview) activeNotePreview.textContent = 'Rest';
+            }
+
+            // Execute Play Along Verification if active
+            if (isPlayAlongActive && targetMidiNotes.length > 0) {
+                verifyPlayAlongBeat(targetMidiNotes, beat);
             }
         });
 
@@ -130,7 +158,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gpMetaBar) gpMetaBar.style.display = 'flex';
             if (gpFollowUpBar) gpFollowUpBar.style.display = 'flex';
 
-            // Ensure drum tracks have standard notation enabled so percussion never renders blank
+            // Capture original song tempo
+            originalBpm = score.tempo || 120;
+            if (gpBpmInput) gpBpmInput.value = originalBpm;
+            if (gpSpeedSelect) gpSpeedSelect.value = "1.0";
+
+            // Fix drums tracks
             score.tracks.forEach(t => {
                 if (t.isPercussion) {
                     t.staves.forEach(stave => {
@@ -155,12 +188,64 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Post render finished
         api.postRenderFinished.on(() => {
             if (gpStatusBadge && gpStatusBadge.textContent === 'LOADING...') {
                 gpStatusBadge.textContent = 'READY';
             }
         });
+    }
+
+    // Play Along Verification Logic
+    function verifyPlayAlongBeat(targetMidiNotes, beat) {
+        if (!playAlongEngine || !playAlongEngine.isRunning) return;
+
+        const mode = playAlongModeSelect ? playAlongModeSelect.value : 'stop';
+        let evalResult = playAlongEngine.evaluateMatch(targetMidiNotes);
+
+        if (evalResult.matched) {
+            // Note Hit!
+            showPlayAlongResult('HIT! (In Tune)', 'hit');
+        } else {
+            // Note Missed
+            if (mode === 'stop') {
+                // Pause playback until user plays the note correctly
+                api.pause();
+                showPlayAlongResult('WAITING FOR CORRECT NOTE...', 'wait');
+
+                if (playAlongListeningLoop) clearInterval(playAlongListeningLoop);
+                playAlongListeningLoop = setInterval(() => {
+                    evalResult = playAlongEngine.evaluateMatch(targetMidiNotes);
+                    if (evalResult.matched) {
+                        clearInterval(playAlongListeningLoop);
+                        playAlongListeningLoop = null;
+                        showPlayAlongResult('CORRECT! RESUMING...', 'hit');
+                        setTimeout(() => {
+                            if (isPlayAlongActive) api.play();
+                        }, 250);
+                    }
+                }, 100);
+            } else {
+                // Keep going, mark missed beat with red highlight
+                showPlayAlongResult('MISSED NOTE', 'miss');
+                highlightMissedBeatInRed();
+            }
+        }
+    }
+
+    function showPlayAlongResult(text, type) {
+        if (!playAlongFeedback) return;
+        playAlongFeedback.textContent = text;
+        playAlongFeedback.className = `playalong-status-badge ${type}`;
+    }
+
+    function highlightMissedBeatInRed() {
+        const beatEl = document.querySelector('.at-cursor-beat');
+        if (beatEl) {
+            beatEl.classList.add('missed-red-glow');
+            setTimeout(() => {
+                beatEl.classList.remove('missed-red-glow');
+            }, 600);
+        }
     }
 
     function updateCurrentTrackBadge(track) {
@@ -169,7 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
         curTrackBadge.textContent = `${typeIcon} ${track.name || 'Track'}`;
     }
 
-    // Load file from ArrayBuffer
     function loadGpBuffer(arrayBuffer) {
         if (!api) initAlphaTab();
         if (api) {
@@ -179,7 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Load from URL
     function loadGpUrl(url) {
         if (!api) initAlphaTab();
         if (api) {
@@ -188,7 +271,73 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // File input change
+    // Play Along Toggle Switch
+    if (playAlongToggle) {
+        playAlongToggle.addEventListener('change', async () => {
+            isPlayAlongActive = playAlongToggle.checked;
+            if (isPlayAlongActive) {
+                try {
+                    if (!playAlongEngine) {
+                        playAlongEngine = new window.PlayAlongEngine();
+                    }
+                    await playAlongEngine.start();
+                    showPlayAlongResult('COACH LISTENING...', 'listening');
+                } catch (e) {
+                    console.error("Mic error:", e);
+                    playAlongToggle.checked = false;
+                    isPlayAlongActive = false;
+                    alert("Could not access microphone for Play Along coach. Please grant mic permission.");
+                }
+            } else {
+                if (playAlongEngine) playAlongEngine.stop();
+                if (playAlongListeningLoop) clearInterval(playAlongListeningLoop);
+                showPlayAlongResult('OFF', 'standby');
+            }
+        });
+    }
+
+    // Speed Multiplier Select
+    if (gpSpeedSelect) {
+        gpSpeedSelect.addEventListener('change', () => {
+            if (!api) return;
+            const speed = parseFloat(gpSpeedSelect.value);
+            api.playbackSpeed = speed;
+            // Update BPM input to reflect scaled tempo
+            if (gpBpmInput) {
+                gpBpmInput.value = Math.round(originalBpm * speed);
+            }
+        });
+    }
+
+    // Direct BPM Input
+    if (gpBpmInput) {
+        gpBpmInput.addEventListener('input', () => {
+            if (!api) return;
+            const newBpm = parseInt(gpBpmInput.value, 10);
+            if (!isNaN(newBpm) && newBpm > 20 && newBpm <= 400 && originalBpm > 0) {
+                const calculatedSpeed = newBpm / originalBpm;
+                api.playbackSpeed = calculatedSpeed;
+                // Update speed selector dropdown if exact match exists, or leave custom
+                if (gpSpeedSelect) {
+                    const matchOpt = Array.from(gpSpeedSelect.options).find(o => Math.abs(parseFloat(o.value) - calculatedSpeed) < 0.05);
+                    if (matchOpt) {
+                        gpSpeedSelect.value = matchOpt.value;
+                    }
+                }
+            }
+        });
+    }
+
+    // Restore Speed & BPM to Original
+    if (gpRestoreSpeedBtn) {
+        gpRestoreSpeedBtn.addEventListener('click', () => {
+            if (!api) return;
+            api.playbackSpeed = 1.0;
+            if (gpSpeedSelect) gpSpeedSelect.value = "1.0";
+            if (gpBpmInput) gpBpmInput.value = originalBpm;
+        });
+    }
+
     if (gpFileInput) {
         gpFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -202,7 +351,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Drag and Drop
     if (gpDropZone) {
         gpDropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
@@ -225,14 +373,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Sample button
     if (loadSampleGpBtn) {
         loadSampleGpBtn.addEventListener('click', () => {
             loadGpUrl(SAMPLE_GP_URL);
         });
     }
 
-    // Play / Pause
     if (gpPlayBtn) {
         gpPlayBtn.addEventListener('click', () => {
             if (!api) return;
@@ -240,15 +386,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Stop
     if (gpStopBtn) {
         gpStopBtn.addEventListener('click', () => {
             if (!api) return;
             api.stop();
+            if (playAlongListeningLoop) clearInterval(playAlongListeningLoop);
         });
     }
 
-    // Track Select change
     if (gpTrackSelect) {
         gpTrackSelect.addEventListener('change', () => {
             if (!api || !api.score) return;
@@ -257,7 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const selectedTrack = api.score.tracks[trackIdx];
                 updateCurrentTrackBadge(selectedTrack);
 
-                // If percussion, ensure notation is rendered properly
                 if (selectedTrack.isPercussion) {
                     selectedTrack.staves.forEach(stave => {
                         stave.showStandardNotation = true;
@@ -270,16 +414,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Speed Select
-    if (gpSpeedSelect) {
-        gpSpeedSelect.addEventListener('change', () => {
-            if (!api) return;
-            const speed = parseFloat(gpSpeedSelect.value);
-            api.playbackSpeed = speed;
-        });
-    }
-
-    // Zoom Select
     if (gpZoomSelect) {
         gpZoomSelect.addEventListener('change', () => {
             if (!api) return;
@@ -290,7 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Lazy load alphaTab when the tab is clicked
     const gpTabBtn = document.querySelector('.tab-button[data-tab="gpreader"]');
     if (gpTabBtn) {
         gpTabBtn.addEventListener('click', () => {
