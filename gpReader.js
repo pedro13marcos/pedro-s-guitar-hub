@@ -28,6 +28,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const playAlongModeSelect = document.getElementById('playAlongModeSelect');
     const playAlongFeedback = document.getElementById('playAlongFeedback');
 
+    // Countdown Overlay Elements
+    const gpCountdownOverlay = document.getElementById('gpCountdownOverlay');
+    const countdownNumber = document.getElementById('countdownNumber');
+    let isCountingDown = false;
+    let countdownTimer = null;
+
     const alphaTabContainer = document.getElementById('alphaTabContainer');
 
     let api = null;
@@ -379,15 +385,102 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Beep audio click for countdown beats
+    let countdownAudioCtx = null;
+    function playCountdownClick(isFinal) {
+        try {
+            if (!countdownAudioCtx) {
+                countdownAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (countdownAudioCtx.state === 'suspended') {
+                countdownAudioCtx.resume();
+            }
+            const osc = countdownAudioCtx.createOscillator();
+            const gain = countdownAudioCtx.createGain();
+
+            osc.type = "sine";
+            // High pitch on 1 (final beat), lower on 4, 3, 2
+            osc.frequency.setValueAtTime(isFinal ? 1200 : 800, countdownAudioCtx.currentTime);
+
+            gain.gain.setValueAtTime(0.25, countdownAudioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, countdownAudioCtx.currentTime + 0.15);
+
+            osc.connect(gain);
+            gain.connect(countdownAudioCtx.destination);
+
+            osc.start();
+            osc.stop(countdownAudioCtx.currentTime + 0.15);
+        } catch (e) {
+            console.warn("Countdown click error:", e);
+        }
+    }
+
+    // Trigger 4-3-2-1 countdown before starting
+    function startCountdownAndPlay() {
+        if (!api || isCountingDown) return;
+
+        // If song is currently paused, resume immediately without countdown
+        if (api.playerState === 2) {
+            api.playPause();
+            return;
+        }
+
+        // Calculate beat duration based on active BPM & speed
+        const currentBpm = gpBpmInput ? parseInt(gpBpmInput.value, 10) : originalBpm;
+        const beatIntervalMs = Math.max(250, Math.min(1000, 60000 / (currentBpm || 120)));
+
+        isCountingDown = true;
+        let count = 4;
+
+        if (gpCountdownOverlay && countdownNumber) {
+            countdownNumber.textContent = count;
+            gpCountdownOverlay.style.display = 'flex';
+        }
+
+        if (gpStatusBadge) gpStatusBadge.textContent = 'COUNTDOWN...';
+        playCountdownClick(false);
+
+        countdownTimer = setInterval(() => {
+            count--;
+            if (count > 0) {
+                if (countdownNumber) countdownNumber.textContent = count;
+                playCountdownClick(count === 1);
+            } else {
+                // Countdown complete
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+                isCountingDown = false;
+                if (gpCountdownOverlay) gpCountdownOverlay.style.display = 'none';
+
+                // Start alphaTab audio playback
+                api.play();
+            }
+        }, beatIntervalMs);
+    }
+
+    function cancelCountdown() {
+        if (isCountingDown) {
+            if (countdownTimer) clearInterval(countdownTimer);
+            countdownTimer = null;
+            isCountingDown = false;
+            if (gpCountdownOverlay) gpCountdownOverlay.style.display = 'none';
+        }
+    }
+
     if (gpPlayBtn) {
         gpPlayBtn.addEventListener('click', () => {
             if (!api) return;
-            api.playPause();
+            if (isApiPlaying) {
+                api.pause();
+            } else {
+                startCountdownAndPlay();
+            }
         });
     }
 
     if (gpStopBtn) {
         gpStopBtn.addEventListener('click', () => {
+            cancelCountdown();
             if (!api) return;
             api.stop();
             if (playAlongListeningLoop) clearInterval(playAlongListeningLoop);
