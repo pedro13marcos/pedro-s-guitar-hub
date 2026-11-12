@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro's Guitar Hub v0.12</title>
+    <title>Pedro's Guitar Hub v0.13</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div>
-                <span class="version-badge">v0.12</span>
+                <span class="version-badge">v0.13</span>
             </div>
         </header>
 
@@ -142,6 +142,21 @@
                         </div>
 
                         <span id="gpStatusBadge" class="gp-status-badge">READY</span>
+                    </div>
+                </div>
+
+                <!-- Visual Track Follow-Up HUD Bar -->
+                <div id="gpFollowUpBar" class="gp-followup-bar" style="display: none;">
+                    <div class="followup-left">
+                        <span class="followup-title">NOW PLAYING:</span>
+                        <span id="curTrackBadge" class="followup-track-badge">🎸 Lead Guitar</span>
+                        <span id="curBarBadge" class="followup-badge">Bar 1</span>
+                        <span id="curBeatBadge" class="followup-badge">Beat 1</span>
+                        <span id="curTempoBadge" class="followup-badge">120 BPM</span>
+                    </div>
+                    <div class="followup-right">
+                        <span class="followup-title">STRUCK NOTES:</span>
+                        <span id="activeNotePreview" class="followup-notes-readout">--</span>
                     </div>
                 </div>
 
@@ -348,7 +363,7 @@ E|-----------------------------------|"></textarea>
         <!-- App Footer -->
         <footer class="app-footer">
             <p>Press the <strong>Space Bar</strong> anywhere to start/pause the stopwatch.</p>
-            <p class="version-watermark">v0.12</p>
+            <p class="version-watermark">v0.13</p>
         </footer>
     </div>
 

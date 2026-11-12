@@ -13,12 +13,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const gpMetaBar = document.getElementById('gpMetaBar');
     const loadSampleGpBtn = document.getElementById('loadSampleGpBtn');
 
+    // Visual Follow-up HUD Elements
+    const gpFollowUpBar = document.getElementById('gpFollowUpBar');
+    const curTrackBadge = document.getElementById('curTrackBadge');
+    const curBarBadge = document.getElementById('curBarBadge');
+    const curBeatBadge = document.getElementById('curBeatBadge');
+    const curTempoBadge = document.getElementById('curTempoBadge');
+    const activeNotePreview = document.getElementById('activeNotePreview');
+
     const alphaTabContainer = document.getElementById('alphaTabContainer');
 
     let api = null;
     let isApiPlaying = false;
 
-    // Canon in D sample in Guitar Pro format (classic public domain demo)
+    // Canon in D sample in Guitar Pro format
     const SAMPLE_GP_URL = 'https://www.alphatab.net/files/canon.gp';
 
     // Initialize alphaTab instance with dark studio theme and SVG engine
@@ -35,12 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             display: {
                 layoutMode: 'page',
-                staveProfile: 'default', // Render tablature and score as defined in the GP file
+                staveProfile: 'default', // Auto-detects notation & tablature properly for both guitar & drums
                 resources: {
                     // Dark theme matching Pedro's Guitar Hub
-                    staffLineColor: 'rgba(255, 255, 255, 0.35)', // Tab & staff lines
+                    staffLineColor: 'rgba(255, 255, 255, 0.35)', // Tab, drum and staff lines
                     barSeparatorColor: 'rgba(255, 255, 255, 0.7)',
-                    mainGlyphColor: '#f8fafc',                    // Crisp white notes and numbers
+                    mainGlyphColor: '#f8fafc',                    // Crisp white notes, stems, drum heads
                     secondaryGlyphColor: '#94a3b8',
                     scoreInfoColor: '#38bdf8',                    // Cyan title/artist
                     barNumberColor: '#64748b',
@@ -50,6 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
             player: {
                 enablePlayer: true,
                 enableCursor: true,
+                scrollMode: 1, // Continuous scroll into view
+                scrollElement: '.alphatab-wrapper',
                 soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2'
             }
         });
@@ -77,6 +87,38 @@ document.addEventListener('DOMContentLoaded', () => {
                     gpPlayBtn.classList.remove('playing');
                 }
                 if (gpStatusBadge) gpStatusBadge.textContent = 'READY';
+                if (activeNotePreview) activeNotePreview.textContent = '--';
+            }
+        });
+
+        // Live Playback Tracker - Follow active bar, beat, tempo and notes
+        api.playedBeatChanged.on((beat) => {
+            if (!beat) return;
+
+            // Bar number
+            if (curBarBadge && beat.voice && beat.voice.bar) {
+                curBarBadge.textContent = `Bar ${beat.voice.bar.index + 1}`;
+            }
+
+            // Beat position
+            if (curBeatBadge) {
+                curBeatBadge.textContent = `Beat ${(beat.index % 4) + 1}`;
+            }
+
+            // Tempo
+            if (curTempoBadge && beat.voice && beat.voice.bar && beat.voice.bar.tempoAutomation) {
+                curTempoBadge.textContent = `${Math.round(beat.voice.bar.tempoAutomation.value)} BPM`;
+            }
+
+            // Note / Fret or Percussion sound readout
+            if (activeNotePreview && beat.notes && beat.notes.length > 0) {
+                const noteDescriptions = beat.notes.map(n => {
+                    if (n.isPercussion) {
+                        return n.percussionElement ? n.percussionElement.name : 'Drum Hit';
+                    }
+                    return `${n.fret} (Str ${n.string})`;
+                });
+                activeNotePreview.textContent = noteDescriptions.join(', ');
             }
         });
 
@@ -86,6 +128,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gpSongArtist) gpSongArtist.textContent = score.artist ? `by ${score.artist}` : '';
             if (gpStatusBadge) gpStatusBadge.textContent = 'READY';
             if (gpMetaBar) gpMetaBar.style.display = 'flex';
+            if (gpFollowUpBar) gpFollowUpBar.style.display = 'flex';
+
+            // Ensure drum tracks have standard notation enabled so percussion never renders blank
+            score.tracks.forEach(t => {
+                if (t.isPercussion) {
+                    t.staves.forEach(stave => {
+                        stave.showStandardNotation = true;
+                        stave.showTablature = false;
+                    });
+                }
+            });
 
             // Populate Track Select
             if (gpTrackSelect) {
@@ -93,10 +146,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 score.tracks.forEach((track, index) => {
                     const opt = document.createElement('option');
                     opt.value = index;
-                    opt.textContent = `${index + 1}. ${track.name || 'Track ' + (index + 1)}`;
+                    const typeLabel = track.isPercussion ? '🥁 Drums' : (track.name.toLowerCase().includes('bass') ? '🎸 Bass' : '🎸 Guitar');
+                    opt.textContent = `${index + 1}. ${track.name || 'Track ' + (index + 1)} (${typeLabel})`;
                     gpTrackSelect.appendChild(opt);
                 });
                 gpTrackSelect.value = 0;
+                updateCurrentTrackBadge(score.tracks[0]);
             }
         });
 
@@ -108,12 +163,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function updateCurrentTrackBadge(track) {
+        if (!curTrackBadge || !track) return;
+        const typeIcon = track.isPercussion ? '🥁' : '🎸';
+        curTrackBadge.textContent = `${typeIcon} ${track.name || 'Track'}`;
+    }
+
     // Load file from ArrayBuffer
     function loadGpBuffer(arrayBuffer) {
         if (!api) initAlphaTab();
         if (api) {
             if (gpStatusBadge) gpStatusBadge.textContent = 'LOADING...';
-            // Convert ArrayBuffer to Uint8Array for bulletproof cross-browser alphaTab parsing
             const uint8 = new Uint8Array(arrayBuffer);
             api.load(uint8);
         }
@@ -194,7 +254,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!api || !api.score) return;
             const trackIdx = parseInt(gpTrackSelect.value, 10);
             if (!isNaN(trackIdx) && api.score.tracks[trackIdx]) {
-                api.renderTracks([api.score.tracks[trackIdx]]);
+                const selectedTrack = api.score.tracks[trackIdx];
+                updateCurrentTrackBadge(selectedTrack);
+
+                // If percussion, ensure notation is rendered properly
+                if (selectedTrack.isPercussion) {
+                    selectedTrack.staves.forEach(stave => {
+                        stave.showStandardNotation = true;
+                        stave.showTablature = false;
+                    });
+                }
+
+                api.renderTracks([selectedTrack]);
             }
         });
     }
@@ -226,7 +297,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!api) {
                 setTimeout(initAlphaTab, 100);
             } else {
-                // If tab was switched, tell alphaTab to recalculate container width
                 setTimeout(() => {
                     if (api) api.render();
                 }, 100);
