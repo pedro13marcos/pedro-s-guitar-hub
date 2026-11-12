@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Canon in D sample in Guitar Pro format (classic public domain demo)
     const SAMPLE_GP_URL = 'https://www.alphatab.net/files/canon.gp';
 
-    // Initialize alphaTab instance
+    // Initialize alphaTab instance with dark studio theme and SVG engine
     function initAlphaTab() {
         if (!alphaTabContainer || typeof alphaTab === 'undefined') {
             console.warn('alphaTab library not loaded');
@@ -30,12 +30,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         api = new alphaTab.AlphaTabApi(alphaTabContainer, {
             core: {
-                engine: 'html5',
+                engine: 'svg', // Crisp vector SVG rendering
                 logLevel: 'warning'
             },
             display: {
                 layoutMode: 'page',
-                staveProfile: 'tab', // Show tablature
+                staveProfile: 'default', // Render tablature and score as defined in the GP file
+                resources: {
+                    // Dark theme matching Pedro's Guitar Hub
+                    staffLineColor: 'rgba(255, 255, 255, 0.35)', // Tab & staff lines
+                    barSeparatorColor: 'rgba(255, 255, 255, 0.7)',
+                    mainGlyphColor: '#f8fafc',                    // Crisp white notes and numbers
+                    secondaryGlyphColor: '#94a3b8',
+                    scoreInfoColor: '#38bdf8',                    // Cyan title/artist
+                    barNumberColor: '#64748b',
+                    fretNumberColor: '#38bdf8'
+                }
             },
             player: {
                 enablePlayer: true,
@@ -89,6 +99,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 gpTrackSelect.value = 0;
             }
         });
+
+        // Post render finished
+        api.postRenderFinished.on(() => {
+            if (gpStatusBadge && gpStatusBadge.textContent === 'LOADING...') {
+                gpStatusBadge.textContent = 'READY';
+            }
+        });
     }
 
     // Load file from ArrayBuffer
@@ -96,7 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!api) initAlphaTab();
         if (api) {
             if (gpStatusBadge) gpStatusBadge.textContent = 'LOADING...';
-            api.load(arrayBuffer);
+            // Convert ArrayBuffer to Uint8Array for bulletproof cross-browser alphaTab parsing
+            const uint8 = new Uint8Array(arrayBuffer);
+            api.load(uint8);
         }
     }
 
@@ -206,6 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
         gpTabBtn.addEventListener('click', () => {
             if (!api) {
                 setTimeout(initAlphaTab, 100);
+            } else {
+                // If tab was switched, tell alphaTab to recalculate container width
+                setTimeout(() => {
+                    if (api) api.render();
+                }, 100);
             }
         });
     }
