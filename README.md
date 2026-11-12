@@ -1,8 +1,8 @@
-# Pedro's Guitar Hub (v0.7)
+# Pedro's Guitar Hub (v0.8)
 
 Your all-in-one practice suite for guitarists and musicians.
 
-**Live Preview (Dev)**: [https://pedro-s-guitar-hub-dev.vercel.app](https://pedro-s-guitar-hub-dev.vercel.app)
+**Live App**: [https://pedro-s-guitar-hub-dev.vercel.app](https://pedro-s-guitar-hub-dev.vercel.app)
 
 ## Features
 - **Chromatic Tuner**: Clip-on style digital tuner with auto-correlation fundamental pitch detection, real-time LED cent arc meter, and in-tune indicator.
