@@ -688,6 +688,191 @@ body {
     outline: none;
 }
 
+/* Tab Reader Workspace */
+.tabreader-workspace {
+    background: rgba(18, 24, 38, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 24px;
+}
+
+.tabreader-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 14px;
+}
+
+.tabreader-header h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+.tabreader-subtitle {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.tabreader-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.reader-input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.reader-input-section label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.reader-controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    margin-bottom: 18px;
+}
+
+.playback-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.speed-slider {
+    width: 100px;
+    accent-color: #3b82f6;
+    cursor: pointer;
+}
+
+.speed-value {
+    font-family: monospace;
+    color: #f8fafc;
+    min-width: 50px;
+}
+
+.reader-status-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.reader-visualizer-container {
+    background: #090d16;
+    border: 2px solid #1e293b;
+    border-radius: 12px;
+    padding: 18px;
+    overflow-x: auto;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.reader-block {
+    margin-bottom: 20px;
+}
+
+.reader-block:last-child {
+    margin-bottom: 0;
+}
+
+.reader-table {
+    border-collapse: collapse;
+    width: max-content;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.reader-string-label {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #38bdf8;
+    padding-right: 12px;
+    border-right: 2px solid #475569;
+    text-align: center;
+    user-select: none;
+}
+
+.reader-cell {
+    width: 22px;
+    height: 30px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #475569;
+    position: relative;
+    user-select: none;
+    transition: all 0.08s ease;
+}
+
+.reader-cell::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #334155;
+    z-index: 1;
+}
+
+.reader-cell.has-note {
+    color: #f8fafc;
+    position: relative;
+    z-index: 2;
+}
+
+.reader-cell.has-note::before {
+    background: #1e293b;
+}
+
+.reader-cell.reader-cursor {
+    background: #22c55e !important;
+    color: #000000 !important;
+    border-radius: 4px;
+    box-shadow: 0 0 14px #22c55e;
+    z-index: 3;
+}
+
+.reader-cell.reader-cursor::before {
+    display: none;
+}
+
+.empty-tab-hint {
+    color: #64748b;
+    font-size: 0.9rem;
+    padding: 20px 0;
+    text-align: center;
+}
+
 /* Note Generator Workspace */
 .notes-workspace {
     background: rgba(18, 24, 38, 0.6);

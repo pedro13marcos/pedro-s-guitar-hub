@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro's Guitar Hub v0.9</title>
+    <title>Pedro's Guitar Hub v0.10</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div>
-                <span class="version-badge">v0.9</span>
+                <span class="version-badge">v0.10</span>
             </div>
         </header>
 
@@ -67,6 +67,9 @@
             </button>
             <button class="tab-button" data-tab="tabmaker">
                 <span>🎼</span> Tab Maker
+            </button>
+            <button class="tab-button" data-tab="tabreader">
+                <span>📖</span> Tab Reader
             </button>
             <button class="tab-button" data-tab="notes">
                 <span>🎲</span> Note Generator
@@ -203,6 +206,54 @@
             </div>
         </div>
 
+        <!-- Tab Reader Tab Content -->
+        <div id="tabreader" class="tab-content">
+            <div class="tabreader-workspace">
+                <div class="tabreader-header">
+                    <div>
+                        <h2>ASCII Tablature Reader & Player</h2>
+                        <p class="tabreader-subtitle">Paste any guitar tab from Ultimate Guitar, Songsterr or TXT files to read and listen</p>
+                    </div>
+                    <div class="tabreader-actions">
+                        <button id="loadSampleTabBtn" class="btn-secondary">⚡ Load Sample</button>
+                        <button id="parseTabBtn" class="btn-primary">🔍 Parse & Load Tab</button>
+                    </div>
+                </div>
+
+                <!-- Input Textarea for ASCII Tab -->
+                <div class="reader-input-section">
+                    <label for="asciiInputArea">Paste ASCII Tab Here:</label>
+                    <textarea id="asciiInputArea" rows="7" class="ascii-textarea" placeholder="Paste your 6-string tab here, for example:
+e|-----------------------------------|
+B|-----------------------------------|
+G|--0---3---5---0---3---6-5---0---3--|
+D|--0---3---5---0---3---6-5---0---3--|
+A|-----------------------------------|
+E|-----------------------------------|"></textarea>
+                </div>
+
+                <!-- Reader Controls Bar -->
+                <div class="reader-controls-bar">
+                    <div class="playback-controls">
+                        <button id="playReaderBtn" class="btn-primary">▶ Play Tab</button>
+                        <button id="stopReaderBtn" class="btn-secondary">⏹ Stop</button>
+                        <button id="clearReaderBtn" class="btn-secondary">Clear</button>
+                    </div>
+                    <div class="speed-control">
+                        <label for="readerSpeed">Speed:</label>
+                        <input type="range" id="readerSpeed" min="80" max="400" value="180" class="speed-slider">
+                        <span id="readerSpeedVal" class="speed-value">180 ms</span>
+                    </div>
+                    <div id="readerStatus" class="reader-status-badge">Waiting for tab...</div>
+                </div>
+
+                <!-- Interactive Visualizer -->
+                <div class="reader-visualizer-container">
+                    <div id="readerVisualizer" class="reader-visualizer-scroll"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Note Generator Tab Content -->
         <div id="notes" class="tab-content">
             <div class="notes-workspace">
@@ -221,7 +272,7 @@
         <!-- App Footer -->
         <footer class="app-footer">
             <p>Press the <strong>Space Bar</strong> anywhere to start/pause the stopwatch.</p>
-            <p class="version-watermark">v0.9</p>
+            <p class="version-watermark">v0.10</p>
         </footer>
     </div>
 
@@ -246,6 +297,7 @@
     <script src="tuner.js"></script>
     <script src="stopwatch.js"></script>
     <script src="tabMaker.js"></script>
+    <script src="tabReader.js"></script>
     <script src="notesRandom.js"></script>
 </body>
 </html>
