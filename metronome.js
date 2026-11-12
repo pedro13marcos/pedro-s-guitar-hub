@@ -3,6 +3,8 @@ let tempo = 120; // Default tempo (beats per minute)
 let intervalId;
 let audioContext;
 
+const beatIndicator = document.getElementById("beatIndicator");
+
 function getAudioContext() {
     if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -13,73 +15,85 @@ function getAudioContext() {
     return audioContext;
 }
 
-// Create a simple click sound (you can use other sounds if you prefer)
+// Flash visual beat LED indicator dot
+function flashBeat() {
+    if (beatIndicator) {
+        beatIndicator.classList.add("flash");
+        setTimeout(() => {
+            beatIndicator.classList.remove("flash");
+        }, 75);
+    }
+}
+
+// Create a simple click sound
 function createClickSound() {
     const ctx = getAudioContext();
     const soundSource = ctx.createBufferSource();
 
-    fetch('src/click.wav') // Path to your sound file
+    fetch('src/click.wav')
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
         .then(decodedBuffer => {
             soundSource.buffer = decodedBuffer;
-            soundSource.connect(ctx.destination); // Connect to output
+            soundSource.connect(ctx.destination);
             soundSource.start(0);
+            flashBeat();
         })
-        .catch(error => console.error("Error loading sound:", error));
+        .catch(error => {
+            console.error("Error loading sound:", error);
+            flashBeat();
+        });
 }
 
 function startMetronome() {
     if (!isMetronomeRunning) {
         isMetronomeRunning = true;
+        createClickSound(); // Play immediate click on start
         intervalId = setInterval(() => {
             createClickSound();
-        }, 60000 / tempo); // Interval in milliseconds (60000 / tempo)
+        }, 60000 / tempo);
     }
 }
-
 
 function stopMetronome() {
     if (isMetronomeRunning) {
         clearInterval(intervalId);
         isMetronomeRunning = false;
+        if (beatIndicator) {
+            beatIndicator.classList.remove("flash");
+        }
     }
 }
 
 function updateTempo(newTempo) {
     tempo = newTempo;
     if (isMetronomeRunning) {
-        stopMetronome(); // Restart timer to reflect tempo changes
+        stopMetronome();
         startMetronome();
     }
 }
 
-
-// Get references to buttons (add these to your HTML)
-const startmetronomeButton = document.getElementById("startMetronome");
+// Get references to buttons & controls
+const startMetronomeButton = document.getElementById("startMetronome");
 const stopMetronomeButton = document.getElementById("stopMetronome");
 const tempoInput = document.getElementById("tempo");
-// Tempo display
 const tempoValue = document.getElementById("tempoValue");
 
+if (startMetronomeButton) startMetronomeButton.addEventListener("click", startMetronome);
+if (stopMetronomeButton) stopMetronomeButton.addEventListener("click", stopMetronome);
 
-startmetronomeButton.addEventListener("click", startMetronome);
-stopMetronomeButton.addEventListener("click", stopMetronome);
-
-
-tempoInput.addEventListener("input", () => {
-    const newTempo = parseInt(tempoInput.value, 10);  //Get number from input
-    if (!isNaN(newTempo) && newTempo > 0) {     //Check if is number
-        updateTempo(newTempo);
-        tempoValue.textContent = newTempo;
-    } else {
-        tempoInput.value = tempo; // Revert to the current tempo if the input is invalid
-        tempoValue.textContent = tempo;
-    }
-
-});
-
-
+if (tempoInput) {
+    tempoInput.addEventListener("input", () => {
+        const newTempo = parseInt(tempoInput.value, 10);
+        if (!isNaN(newTempo) && newTempo > 0) {
+            updateTempo(newTempo);
+            if (tempoValue) tempoValue.textContent = newTempo;
+        } else {
+            tempoInput.value = tempo;
+            if (tempoValue) tempoValue.textContent = tempo;
+        }
+    });
+}
 
 // Initialize tempo display
-tempoValue.textContent = tempo;
+if (tempoValue) tempoValue.textContent = tempo;

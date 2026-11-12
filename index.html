@@ -3,124 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro's Guitar Hub v0.3</title>
+    <title>Pedro's Guitar Hub v0.4</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <header>
-            <div class="tools">
-            <!-- Metronome Section -->
-            <div id="metronome">
-                <div class="tempo-container">
-                    <label for="tempo">Tempo:</label>
-                    <input type="number" id="tempo" name="tempo" min="20" max="500" value="120">
-                    <span id="tempoValue">120</span> BPM
-                </div>
-                <button id="startMetronome" class="topbutton">Start</button>
-                <button id="stopMetronome" class="topbutton">Stop</button>
-            </div>
-
-            <!--title-->
-            <div id="title">
-                <h1>Pedro's Guitar Hub</h1>
-                <p>Your all-in-one practice companion</p>
-            </div>
-
-            <!-- Timer Section -->
-            <div id="timer">
-                <div id="timerDisplay">00:00:00</div>
-                <div class="tool-container">
-                    <button id="start" class="topbutton">Start</button>
-                    <button id="stop" class="topbutton">Stop</button>
-                    <button id="reset" class="topbutton">Reset</button>
+        <!-- Top App Bar & Brand -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon">🎸</div>
+                <div>
+                    <h1 class="brand-title">Pedro's Guitar Hub</h1>
+                    <p class="brand-subtitle">STUDIO PRACTICE SUITE • PRO EDITION</p>
                 </div>
             </div>
-        </div>
-            
+            <div>
+                <span class="version-badge">v0.4</span>
+            </div>
         </header>
 
-        
+        <!-- Top Tools Station: Metronome & Session Stopwatch -->
+        <div class="top-grid">
+            <!-- Metronome Card -->
+            <div class="panel-card" id="metronome-card">
+                <div class="card-header">
+                    <span>METRONOME</span>
+                    <div id="beatIndicator" class="beat-dot"></div>
+                </div>
+                <div class="tempo-readout">
+                    <span id="tempoValue" class="bpm-num">120</span>
+                    <span class="bpm-unit">BPM</span>
+                </div>
+                <div class="slider-wrapper">
+                    <input type="range" id="tempo" min="40" max="260" value="120" class="tempo-slider">
+                </div>
+                <div class="btn-group">
+                    <button id="startMetronome" class="btn-primary">▶ Start</button>
+                    <button id="stopMetronome" class="btn-secondary">Stop</button>
+                </div>
+            </div>
 
+            <!-- Session Stopwatch Card -->
+            <div class="panel-card" id="timer-card">
+                <div class="card-header">
+                    <span>SESSION TIMER</span>
+                    <span class="shortcut-tag">Spacebar</span>
+                </div>
+                <div class="stopwatch-container">
+                    <div id="timerDisplay" class="stopwatch-readout">00:00:00.00</div>
+                </div>
+                <div class="btn-group">
+                    <button id="start" class="btn-primary start-timer-btn">Start</button>
+                    <button id="stop" class="btn-secondary">Stop</button>
+                    <button id="reset" class="btn-secondary">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Segmented Tab Navigation -->
         <div class="tabs">
-            <button class="tab-button active" data-tab="notes">Note Generator</button>
-            <button class="tab-button" data-tab="tuner">Tuner</button>
+            <button class="tab-button active" data-tab="tuner">
+                <span>🎯</span> Chromatic Tuner
+            </button>
+            <button class="tab-button" data-tab="notes">
+                <span>🎲</span> Note Generator
+            </button>
         </div>
 
-        <div id="notes" class="tab-content active">
-            <div class="tool-container">
-                <button id="randomNotesButton">Generate Random Notes</button>
-                <button id="clearButton" class="secondary">Clear Notes</button>
-            </div>
-            <ul id="notesList"></ul>
-        </div>
-    
+        <!-- Tuner Tab Content -->
+        <div id="tuner" class="tab-content active">
+            <div class="tuner-workspace">
+                <!-- Hardware Clip-On Chassis -->
+                <div class="tuner-chassis">
+                    <div class="tuner-screw screw-tl"></div>
+                    <div class="tuner-screw screw-tr"></div>
+                    
+                    <div class="tuner-brand">Pedro TU-01 • Digital Clip-On</div>
 
-        <div id="tuner" class="tab-content">
-            <!-- Hardware Enclosure -->
-            <div class="tuner-chassis">
-                <div class="tuner-screw screw-tl"></div>
-                <div class="tuner-screw screw-tr"></div>
-                
-                <div class="tuner-brand">Pedro TU-01 • Digital Clip-On</div>
+                    <!-- LCD Glass Screen -->
+                    <div class="tuner-lcd">
+                        <!-- Scale Header -->
+                        <div class="tuner-scale-labels">
+                            <span class="scale-label flat-label">-50</span>
+                            <span class="scale-label center-label">▲ 0</span>
+                            <span class="scale-label sharp-label">+50</span>
+                        </div>
 
-                <!-- LCD Glass Screen -->
-                <div class="tuner-lcd">
-                    <!-- Scale Header -->
-                    <div class="tuner-scale-labels">
-                        <span class="scale-label flat-label">-50</span>
-                        <span class="scale-label center-label">▲ 0</span>
-                        <span class="scale-label sharp-label">+50</span>
+                        <!-- Dynamic LED Arc / Segment Meter -->
+                        <div id="ledMeter" class="led-meter">
+                            <!-- Left Flat LEDs (1-6) -->
+                            <div class="led-bar flat" data-index="0" style="height: 18px;"></div>
+                            <div class="led-bar flat" data-index="1" style="height: 22px;"></div>
+                            <div class="led-bar flat" data-index="2" style="height: 26px;"></div>
+                            <div class="led-bar flat" data-index="3" style="height: 30px;"></div>
+                            <div class="led-bar flat" data-index="4" style="height: 34px;"></div>
+                            <div class="led-bar flat" data-index="5" style="height: 38px;"></div>
+                            <!-- Center In-Tune LEDs (7-8) -->
+                            <div class="led-bar center" data-index="6" style="height: 44px;"></div>
+                            <div class="led-bar center" data-index="7" style="height: 44px;"></div>
+                            <!-- Right Sharp LEDs (9-14) -->
+                            <div class="led-bar sharp" data-index="8" style="height: 38px;"></div>
+                            <div class="led-bar sharp" data-index="9" style="height: 34px;"></div>
+                            <div class="led-bar sharp" data-index="10" style="height: 30px;"></div>
+                            <div class="led-bar sharp" data-index="11" style="height: 26px;"></div>
+                            <div class="led-bar sharp" data-index="12" style="height: 22px;"></div>
+                            <div class="led-bar sharp" data-index="13" style="height: 18px;"></div>
+                        </div>
+
+                        <!-- Note Readout -->
+                        <div class="tuner-note-container">
+                            <span id="noteName" class="digital-note">--</span>
+                            <span id="accidental" class="digital-accidental"></span>
+                            <span id="octave" class="digital-octave"></span>
+                        </div>
+
+                        <!-- Bottom Status Bar -->
+                        <div class="tuner-status-bar">
+                            <span id="frequencyDisplay" class="lcd-text">-- Hz</span>
+                            <span id="tuningIndicator" class="lcd-badge">STANDBY</span>
+                            <span class="lcd-text">CHROMATIC</span>
+                        </div>
                     </div>
 
-                    <!-- Dynamic LED Arc / Segment Meter -->
-                    <div id="ledMeter" class="led-meter">
-                        <!-- Left Flat LEDs (1-6) -->
-                        <div class="led-bar flat" data-index="0" style="height: 18px;"></div>
-                        <div class="led-bar flat" data-index="1" style="height: 22px;"></div>
-                        <div class="led-bar flat" data-index="2" style="height: 26px;"></div>
-                        <div class="led-bar flat" data-index="3" style="height: 30px;"></div>
-                        <div class="led-bar flat" data-index="4" style="height: 34px;"></div>
-                        <div class="led-bar flat" data-index="5" style="height: 38px;"></div>
-                        <!-- Center In-Tune LEDs (7-8) -->
-                        <div class="led-bar center" data-index="6" style="height: 44px;"></div>
-                        <div class="led-bar center" data-index="7" style="height: 44px;"></div>
-                        <!-- Right Sharp LEDs (9-14) -->
-                        <div class="led-bar sharp" data-index="8" style="height: 38px;"></div>
-                        <div class="led-bar sharp" data-index="9" style="height: 34px;"></div>
-                        <div class="led-bar sharp" data-index="10" style="height: 30px;"></div>
-                        <div class="led-bar sharp" data-index="11" style="height: 26px;"></div>
-                        <div class="led-bar sharp" data-index="12" style="height: 22px;"></div>
-                        <div class="led-bar sharp" data-index="13" style="height: 18px;"></div>
+                    <!-- Hardware Control Button -->
+                    <div class="tuner-controls">
+                        <button id="toggleTuner" class="tuner-power-btn">Power / Listen</button>
                     </div>
-
-                    <!-- Note Readout -->
-                    <div class="tuner-note-container">
-                        <span id="noteName" class="digital-note">--</span>
-                        <span id="accidental" class="digital-accidental"></span>
-                        <span id="octave" class="digital-octave"></span>
-                    </div>
-
-                    <!-- Bottom Status Bar -->
-                    <div class="tuner-status-bar">
-                        <span id="frequencyDisplay" class="lcd-text">-- Hz</span>
-                        <span id="tuningIndicator" class="lcd-badge">STANDBY</span>
-                        <span class="lcd-text">CHROMATIC</span>
-                    </div>
-                </div>
-
-                <!-- Hardware Control Button -->
-                <div class="tuner-controls">
-                    <button id="toggleTuner" class="tuner-power-btn">Power / Listen</button>
                 </div>
             </div>
         </div>
-    
-    <footer>
-        <p>Press the <strong>Space Bar</strong> to start and pause the stopwatch.</p>
-        <p class="version-watermark">v0.3</p>
-    </footer>
-</div>
+
+        <!-- Note Generator Tab Content -->
+        <div id="notes" class="tab-content">
+            <div class="notes-workspace">
+                <div class="notes-header">
+                    <h2>Random Note Trainer</h2>
+                    <p class="notes-subtitle">Generate randomized musical notes for fretboard recall and sight practice</p>
+                </div>
+                <div class="tool-container">
+                    <button id="randomNotesButton" class="btn-primary">🎲 Generate Notes</button>
+                    <button id="clearButton" class="btn-secondary">Clear</button>
+                </div>
+                <ul id="notesList" class="notes-grid"></ul>
+            </div>
+        </div>
+
+        <!-- App Footer -->
+        <footer class="app-footer">
+            <p>Press the <strong>Space Bar</strong> anywhere to start/pause the stopwatch.</p>
+            <p class="version-watermark">v0.4</p>
+        </footer>
+    </div>
 
     <script>
         // Tab functionality
@@ -129,11 +162,9 @@
 
         tabButtons.forEach(button => {
             button.addEventListener('click', () => {
-                // Remove active class from all buttons and contents
                 tabButtons.forEach(btn => btn.classList.remove('active'));
                 tabContents.forEach(content => content.classList.remove('active'));
 
-                // Add active class to clicked button and corresponding content
                 button.classList.add('active');
                 const tabId = button.dataset.tab;
                 document.getElementById(tabId).classList.add('active');
@@ -141,12 +172,9 @@
         });
     </script>
 
-
     <script src="metronome.js"></script>
     <script src="tuner.js"></script>
     <script src="stopwatch.js"></script>
     <script src="notesRandom.js"></script>
 </body>
-
-
 </html>
