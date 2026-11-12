@@ -1,25 +1,32 @@
 let isMetronomeRunning = false;
 let tempo = 120; // Default tempo (beats per minute)
 let intervalId;
-const audioContext = new AudioContext();
+let audioContext;
 
-
+function getAudioContext() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
+    return audioContext;
+}
 
 // Create a simple click sound (you can use other sounds if you prefer)
 function createClickSound() {
-    const soundSource = audioContext.createBufferSource();
+    const ctx = getAudioContext();
+    const soundSource = ctx.createBufferSource();
 
-    fetch('/src/click.wav') // Path to your sound file
+    fetch('src/click.wav') // Path to your sound file
         .then(response => response.arrayBuffer())
-        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+        .then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
         .then(decodedBuffer => {
             soundSource.buffer = decodedBuffer;
-            soundSource.connect(audioContext.destination); // Connect to output
+            soundSource.connect(ctx.destination); // Connect to output
             soundSource.start(0);
-
         })
         .catch(error => console.error("Error loading sound:", error));
-
 }
 
 function startMetronome() {
