@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedro's Guitar Hub v0.8</title>
+    <title>Pedro's Guitar Hub v0.9</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div>
-                <span class="version-badge">v0.8</span>
+                <span class="version-badge">v0.9</span>
             </div>
         </header>
 
@@ -64,6 +64,9 @@
         <div class="tabs">
             <button class="tab-button active" data-tab="tuner">
                 <span>🎯</span> Chromatic Tuner
+            </button>
+            <button class="tab-button" data-tab="tabmaker">
+                <span>🎼</span> Tab Maker
             </button>
             <button class="tab-button" data-tab="notes">
                 <span>🎲</span> Note Generator
@@ -133,6 +136,73 @@
             </div>
         </div>
 
+        <!-- Tab Maker Tab Content -->
+        <div id="tabmaker" class="tab-content">
+            <div class="tabmaker-workspace">
+                <div class="tabmaker-header">
+                    <div>
+                        <h2>Interactive Guitar Tab Maker</h2>
+                        <p class="tabmaker-subtitle">Click any string & type fret numbers, or use notation buttons & hotkeys</p>
+                    </div>
+                    <div class="tabmaker-actions">
+                        <button id="playTabBtn" class="btn-primary">▶ Play Tab</button>
+                        <button id="copyTabBtn" class="btn-secondary">📋 Copy ASCII</button>
+                        <button id="clearTabBtn" class="btn-secondary">Clear</button>
+                    </div>
+                </div>
+
+                <!-- Shortcuts & Technique Toolbars -->
+                <div class="technique-toolbar">
+                    <span class="toolbar-label">Techniques:</span>
+                    <button class="technique-btn" data-sym="h" title="Hammer-on (Shortcut: H)">Hammer (h)</button>
+                    <button class="technique-btn" data-sym="p" title="Pull-off (Shortcut: P)">Pull (p)</button>
+                    <button class="technique-btn" data-sym="b" title="Bend (Shortcut: B)">Bend (b)</button>
+                    <button class="technique-btn" data-sym="r" title="Release Bend (Shortcut: R)">Release (r)</button>
+                    <button class="technique-btn" data-sym="/" title="Slide Up (Shortcut: / or S)">Slide Up (/)</button>
+                    <button class="technique-btn" data-sym="\" title="Slide Down (Shortcut: \)">Slide Down (\)</button>
+                    <button class="technique-btn" data-sym="~" title="Vibrato (Shortcut: ~ or V)">Vibrato (~)</button>
+                    <button class="technique-btn" data-sym="x" title="Mute (Shortcut: X)">Mute (x)</button>
+                    <button class="technique-btn" data-sym="|" title="Bar Line (Shortcut: |)">Bar (|)</button>
+                    <button class="technique-btn" data-sym="-" title="Rest / Dash (Shortcut: - or Delete)">Rest (-)</button>
+                </div>
+
+                <!-- Quick Frets Palette -->
+                <div class="frets-toolbar">
+                    <span class="toolbar-label">Quick Frets:</span>
+                    <button class="fret-btn" data-fret="0">0 (Open)</button>
+                    <button class="fret-btn" data-fret="1">1</button>
+                    <button class="fret-btn" data-fret="2">2</button>
+                    <button class="fret-btn" data-fret="3">3</button>
+                    <button class="fret-btn" data-fret="4">4</button>
+                    <button class="fret-btn" data-fret="5">5</button>
+                    <button class="fret-btn" data-fret="7">7</button>
+                    <button class="fret-btn" data-fret="9">9</button>
+                    <button class="fret-btn" data-fret="12">12</button>
+                    <button class="fret-btn" data-fret="14">14</button>
+                    <button class="fret-btn" data-fret="15">15</button>
+                    <button class="fret-btn" data-fret="17">17</button>
+                </div>
+
+                <!-- Interactive Tablature Grid Viewport -->
+                <div class="tab-grid-viewport">
+                    <div id="tabGridContainer" class="tab-grid-scroll"></div>
+                </div>
+
+                <!-- Measures Control -->
+                <div class="grid-controls">
+                    <button id="addColBtn" class="btn-secondary">+ Add 8 Beats</button>
+                    <button id="removeColBtn" class="btn-secondary">- Remove 8 Beats</button>
+                    <span class="keyboard-guide">💡 <strong>Keyboard:</strong> Arrow keys to move • Numbers 0-9 for frets • Backspace to erase • Space to skip</span>
+                </div>
+
+                <!-- Realtime ASCII Export Area -->
+                <div class="ascii-export-section">
+                    <label for="tabAsciiOutput">Formatted ASCII Tab (Ready to copy/share):</label>
+                    <textarea id="tabAsciiOutput" readonly rows="7" class="ascii-textarea"></textarea>
+                </div>
+            </div>
+        </div>
+
         <!-- Note Generator Tab Content -->
         <div id="notes" class="tab-content">
             <div class="notes-workspace">
@@ -151,7 +221,7 @@
         <!-- App Footer -->
         <footer class="app-footer">
             <p>Press the <strong>Space Bar</strong> anywhere to start/pause the stopwatch.</p>
-            <p class="version-watermark">v0.8</p>
+            <p class="version-watermark">v0.9</p>
         </footer>
     </div>
 
@@ -175,6 +245,7 @@
     <script src="metronome.js"></script>
     <script src="tuner.js"></script>
     <script src="stopwatch.js"></script>
+    <script src="tabMaker.js"></script>
     <script src="notesRandom.js"></script>
 </body>
 </html>

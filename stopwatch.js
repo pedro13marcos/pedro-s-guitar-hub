@@ -56,10 +56,14 @@ document.getElementById("reset").addEventListener("click", function () {
     resetStopwatch();
 });
 
-// Spacebar functionality
+// Spacebar functionality (only when not editing text/inputs/tabs)
 document.addEventListener("keydown", function (event) {
     if (event.code === "Space") {
-        event.preventDefault(); // Prevent spacebar from scrolling or interacting with buttons
+        const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+        if (activeTag === "input" || activeTag === "textarea" || document.activeElement.isContentEditable) {
+            return;
+        }
+        event.preventDefault();
         if (isRunning) {
             stopStopwatch();
         } else {

@@ -479,6 +479,215 @@ body {
     box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
 }
 
+/* Tab Maker Workspace */
+.tabmaker-workspace {
+    background: rgba(18, 24, 38, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 24px;
+}
+
+.tabmaker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 14px;
+}
+
+.tabmaker-header h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+.tabmaker-subtitle {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.tabmaker-actions {
+    display: flex;
+    gap: 8px;
+}
+
+#playTabBtn.playing {
+    background: linear-gradient(180deg, #ef4444, #b91c1c);
+    border-color: #f87171;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+}
+
+/* Toolbars */
+.technique-toolbar, .frets-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+    background: rgba(15, 23, 42, 0.6);
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.toolbar-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-right: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.technique-btn, .fret-btn {
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: monospace;
+}
+
+.technique-btn:hover, .fret-btn:hover {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #60a5fa;
+    transform: translateY(-1px);
+}
+
+/* Interactive Tab Grid Viewport */
+.tab-grid-viewport {
+    background: #090d16;
+    border: 2px solid #1e293b;
+    border-radius: 12px;
+    padding: 16px;
+    overflow-x: auto;
+    margin-bottom: 14px;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+
+.tab-table {
+    border-collapse: collapse;
+    width: max-content;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.string-label {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #38bdf8;
+    padding-right: 12px;
+    border-right: 2px solid #475569;
+    text-align: center;
+    user-select: none;
+}
+
+.tab-cell {
+    width: 24px;
+    height: 32px;
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #475569;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    transition: all 0.08s ease;
+}
+
+/* String horizontal line running through cells */
+.tab-cell::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #334155;
+    z-index: 1;
+}
+
+.tab-cell.has-note {
+    color: #f8fafc;
+    z-index: 2;
+    position: relative;
+}
+
+.tab-cell.has-note::before {
+    background: #1e293b;
+}
+
+.tab-cell:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-radius: 4px;
+}
+
+/* Cursor position indicator */
+.tab-cell.cursor-active {
+    background: #2563eb !important;
+    color: #ffffff !important;
+    border-radius: 4px;
+    box-shadow: 0 0 12px #3b82f6;
+    z-index: 3;
+}
+
+.tab-cell.cursor-active::before {
+    display: none;
+}
+
+/* Grid Bottom Controls */
+.grid-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.keyboard-guide {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-left: auto;
+}
+
+/* Realtime ASCII Export Area */
+.ascii-export-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.ascii-export-section label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.ascii-textarea {
+    width: 100%;
+    background: #090d16;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    color: #38bdf8;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    resize: vertical;
+    white-space: pre;
+    line-height: 1.4;
+    outline: none;
+}
+
 /* Note Generator Workspace */
 .notes-workspace {
     background: rgba(18, 24, 38, 0.6);
